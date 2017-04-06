@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/SolaceLabs/pcf-car-demo.svg?branch=master)](https://travis-ci.org/SolaceLabs/pcf-car-demo)
+
 # pcf-car-demo
 An IoT Microservice demo using Cloud Foundry and Solace Messaging
 
