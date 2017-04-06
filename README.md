@@ -5,6 +5,16 @@ An IoT Microservice demo using Cloud Foundry and Solace Messaging
 
 README TODO.
 
+To get going:
+
+```
+git clone https://github.com/SolaceLabs/pcf-car-demo.git
+cd pcf-car-demo
+./gradlew assemble
+cf push
+```
+
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
