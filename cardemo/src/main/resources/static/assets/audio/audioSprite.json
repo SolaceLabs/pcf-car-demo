@@ -1,0 +1,54 @@
+{
+  "resources": [
+    "audioSprite.m4a",
+    "audioSprite.ogg"
+  ],
+  "spritemap": {
+    "silence": {
+      "start": 0,
+      "end": 4,
+      "loop": true
+    },
+    "car-dying": {
+      "start": 5,
+      "end": 8.624013605442176,
+      "loop": false
+    },
+    "drive-slow-to-idle": {
+      "start": 10,
+      "end": 10.603650793650793,
+      "loop": false
+    },
+    "driving": {
+      "start": 12,
+      "end": 14.377052154195011,
+      "loop": false
+    },
+    "flat-deflate": {
+      "start": 16,
+      "end": 16.6,
+      "loop": false
+    },
+    "flat-tire": {
+      "start": 18,
+      "end": 18.96,
+      "loop": false
+    },
+    "glass-shatter_1": {
+      "start": 20,
+      "end": 21.104013605442177,
+      "loop": false
+    },
+    "idle-to-drive": {
+      "start": 23,
+      "end": 23.75278911564626,
+      "loop": false
+    },
+    "idle": {
+      "start": 25,
+      "end": 26.872607709750568,
+      "loop": false
+    }
+  },
+  "autoplay": "silence"
+}
