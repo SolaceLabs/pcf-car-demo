@@ -56,7 +56,6 @@ public class Application {
     static private Queue listenQueue;
     static private Browser myBrowser;
 
-    //@RequestMapping("/cars")
     @RequestMapping(value = "/cars", method = RequestMethod.GET)
     String getCars() throws JCSMPException {
 		System.out.println("Entering getCars");
@@ -65,7 +64,7 @@ public class Application {
         String response = "[\n";
         int i=0;
 
-        while (i < 20 && (rx_msg = myBrowser.getNext()) != null) {
+        while (i < 50 && (rx_msg = myBrowser.getNext()) != null) {
             System.out.println("Browser got message... dumping:");
             System.out.println(rx_msg.dump());
 
@@ -111,6 +110,10 @@ public class Application {
 		properties.setProperty(JCSMPProperties.USERNAME, solaceMessagingServiceInfo.getClientUsername());
 		properties.setProperty(JCSMPProperties.PASSWORD, solaceMessagingServiceInfo.getClientPassword());
 
+        System.out.println("Vpn: " + solaceMessagingServiceInfo.getMsgVpnName());
+        System.out.println("User: " + solaceMessagingServiceInfo.getClientUsername());
+        System.out.println("Passwd: " + solaceMessagingServiceInfo.getClientPassword());
+
         session = JCSMPFactory.onlyInstance().createSession(properties);
         session.connect();
 
@@ -130,14 +133,11 @@ public class Application {
 
         BrowserProperties br_prop = new BrowserProperties();
         br_prop.setEndpoint(listenQueue);
-        br_prop.setTransportWindowSize(1);
-        br_prop.setWaitTimeout(1000);
+        br_prop.setTransportWindowSize(50);
+        br_prop.setWaitTimeout(150);
         myBrowser = session.createBrowser(br_prop);
 
         System.out.println("************* Solace initialized correctly!! ************");
-        System.out.println("Vpn: " + solaceMessagingServiceInfo.getMsgVpnName());
-        System.out.println("User: " + solaceMessagingServiceInfo.getClientUsername());
-        System.out.println("Passwd: " + solaceMessagingServiceInfo.getClientPassword());
 
         SpringApplication.run(Application.class, args);
     }

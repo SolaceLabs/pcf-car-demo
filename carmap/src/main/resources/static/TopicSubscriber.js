@@ -283,7 +283,7 @@ var TopicSubscriber = function (topicName) {
                         addMarker(car,map);
                     }
                     if (i == 0)
-                        setTimeout(subscriber.run,5000);  // run again in 5 seconds -- this makes it into a loop
+                        setTimeout(subscriber.run,2000);  // run again in 5 seconds -- this makes it into a loop
                     else
                     {
                         //alert("car not null. cars returned: " + i);
