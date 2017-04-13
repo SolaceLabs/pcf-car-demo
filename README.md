@@ -26,7 +26,7 @@ This is the high-level scaling architecture for the connected car scenario. Sola
 
 ![](http://dev.solace.com/wp-content/uploads/2017/04/pcf-car-demo-architecture-768x407.png)
 
-### [Learn more](dev.solace.com)![](http://dev.solacesystems.com/wp-content/uploads/2016/10/solace-logo-white.png)
+### [Learn more](dev.solace.com)
 
 
 ### **Get Started**
