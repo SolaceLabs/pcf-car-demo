@@ -2,7 +2,7 @@
 
 
 # Tracking the Movement and Maintenance of Connected Cars
- An IoT Microservice demo using Cloud Foundry and Solace Messaging
+ **An IoT Microservice demo using Cloud Foundry and Solace Messaging**
 
 >This demo simulates a connected vehicle tracking scenario a lot like something we’ve helped one of our customers deploy. In this case, we’ll be tracking car sensor data to show different kinds of maintenance events and faults, and can give individual users the ability to be “tracked” and manually log maintenance faults to see them reflected on the monitoring side of things.
 
