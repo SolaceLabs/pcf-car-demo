@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/SolaceLabs/pcf-car-demo.svg?branch=master)](https://travis-ci.org/SolaceLabs/pcf-car-demo)
 
-### Jump to **[Get Started](#To get going)**
+### Jump to **[Get Started](#To_get_going)**
 
 
 # Tracking the Movement and Maintenance of Connected Cars
@@ -25,7 +25,7 @@ The point is to track the health of each car by sending failures, and fixes, to 
 ### [Learn more](dev.solace.com)
 
 
-### **To get going**
+### **To_get_going**
 
 ```
 git clone https://github.com/SolaceLabs/pcf-car-demo.git
