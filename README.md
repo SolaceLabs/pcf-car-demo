@@ -26,8 +26,6 @@ This is the high-level scaling architecture for the connected car scenario. Sola
 
 ![](http://dev.solace.com/wp-content/uploads/2017/04/pcf-car-demo-architecture-768x407.png)
 
-### [Learn more](dev.solace.com)
-
 
 ### **Get Started**
 
@@ -55,9 +53,11 @@ This project is licensed under the Apache License, Version 2.0. - See the [LICEN
 
 Here are some interesting links if you're new to these concepts:
 
+* [The Solace Developer Portal](http://dev.solace.com/)
+* [Solace Labs](http://dev.solace.com/labs/)
+* [Solace on Pivotal Cloud Foundry](http://dev.solace.com/clouds/pivotal-cloud-foundry/)
 * [Martin Fowler on Microservices](http://martinfowler.com/articles/microservices.html)
 * [A intro to Microservices Design Patterns](http://blog.arungupta.me/microservice-design-patterns/)
+* [Horizontal Scaling of Aggregated Microservices Using Solace Messaging in Cloud Foundry](http://dev.solace.com/solution-demos/horizontal-scaling-aggregated-microservices/)
 * [REST vs Messaging for Microservices](http://www.slideshare.net/ewolff/rest-vs-messaging-for-microservices)
 * [Pivotal Network](https://network.pivotal.io/)
-* [Solace Messaging for Pivotal Cloud Foundry Documentation](http://docs.pivotal.io/solace-messaging/)
-* [The Solace Developer Portal](http://dev.solace.com/)
