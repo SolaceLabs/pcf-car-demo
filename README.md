@@ -1,7 +1,5 @@
 [![Build Status](https://travis-ci.org/SolaceLabs/pcf-car-demo.svg?branch=master)](https://travis-ci.org/SolaceLabs/pcf-car-demo)
 
-### Jump to **[Get Started](#To_get_going)**
-
 
 # Tracking the Movement and Maintenance of Connected Cars
  An IoT Microservice demo using Cloud Foundry and Solace Messaging
