@@ -25,6 +25,11 @@
 
 /*jslint es6 browser devel:true*/
 /*global solace*/
+var flatTires = 0;
+var brokenLights = 0;
+var engineTroubles = 0;
+var okCars = 1;
+var totalConnectedCars = 1;
 
 var TopicSubscriber = function (topicName) {
     "use strict";
@@ -175,6 +180,8 @@ var TopicSubscriber = function (topicName) {
         // make sure it's fully opaque, and update the timestamp
         marker.setOpacity(1.0);
         cars[id]["timestamp"] = Date.now();
+        cars[id].fault = payload.fault;
+
         // NEW: update teh marker based on fault status
         if (payload.fault == "OK") {
             if (autoGen == 1)
@@ -273,13 +280,13 @@ var TopicSubscriber = function (topicName) {
             xhr.onreadystatechange = function() {
                 subscriber.log('onreadystatechange called with readyState=' + this.readyState
                         + ', status=' + this.status );
-                var i = 0;
                 if (this.readyState === 4 && this.status === 200) {
                     var response = JSON.parse(this.responseText);
                     //alert(this.responseText);
+
+                    var i = 0;
                     for (i in response) {
                         var car = response[i];
-                        //alert(car.name);
                         addMarker(car,map);
                     }
                     if (i == 0)
@@ -289,6 +296,35 @@ var TopicSubscriber = function (topicName) {
                         //alert("car not null. cars returned: " + i);
                         setTimeout(subscriber.run,100);  // run again immediately
                     }
+
+                    flatTires = 0;
+                    brokenLights = 0;
+                    engineTroubles = 0;
+                    okCars = 0;
+
+                    var j = 0;
+                    for (j in cars) {
+                        var car = cars[j];
+                        switch (car.fault) {
+                            case "OK":
+                                okCars++;
+                                break;
+                            case "Flat Front Tire":
+                                flatTires++;
+                                break;
+                            case "Flat Rear Tire":
+                                flatTires++;
+                                break;
+                            case "Light Burnt Out":
+                                brokenLights++;
+                                break;
+                            default: // Engine Trouble
+                                engineTroubles++;
+                        }
+                    }
+
+                    totalConnectedCars = okCars + flatTires + brokenLights + engineTroubles;
+                    updateChart();
                 }
             }
 
