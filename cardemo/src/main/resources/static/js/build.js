@@ -25,6 +25,7 @@ var MyGame = {};
         update: update,
         enterIncorrectOrientation: enterIncorrectOrientation,
         leaveIncorrectOrientation: leaveIncorrectOrientation
+
     };
     
     function create() {
@@ -113,6 +114,7 @@ var MyGame = {};
     };
 
     MyGame.Game.prototype = {
+        generateID: generateID,
         create: create,
         update: update,
         // render: render,
@@ -128,6 +130,18 @@ var MyGame = {};
         guiHandler: guiHandler,
         showNameGui: showNameGui
     };
+
+    function generateID() {
+      var d = new Date().getTime();
+      if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
+          d += performance.now(); //use high-precision timer if available
+      }
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+          var r = (d + Math.random() * 16) % 16 | 0;
+          d = Math.floor(d / 16);
+          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+    }
 
     function create() {
       this.isMoving = false;
@@ -236,7 +250,62 @@ var MyGame = {};
         this.helpButton.inputEnabled = true;
       }, this);
       
-      this.apiClient = new APIclient();
+      var carId = generateID();
+
+        var hostname = "tcp.apps.pcfdemo.solacemessaging.net";
+        var port = 36804;
+        var clientId = carId;
+        var userName = "v002.cu000089";
+        var passWord = "d281c8b3-717c-4bf6-90cb-45e05df0bbe3";
+
+        // Create an MQTT client instance
+        var client = new Paho.MQTT.Client(hostname, port, clientId);
+
+        // set callback handlers
+        client.onConnectionLost = onConnectionLost;
+        client.onMessageArrived = onMessageArrived;
+
+       var options = {
+          invocationContext: {host : hostname, port: port, path: "", clientId: clientId},
+          cleanSession: true,
+          onSuccess: onConnect,
+          onFailure: onFail
+        };
+
+        options.userName = userName;
+        options.password = passWord;
+
+        // connect the MQTT client
+        client.connect(options);
+        console.log('Connecting...');
+
+        // called when the client connects
+        function onConnect(context) {
+          // Once a connection has been made, make a subscription and send a message.
+          console.log("Connected");
+          //client.subscribe("World");
+          //message = new Paho.MQTT.Message("Hello");
+          //message.destinationName = "World";
+          //client.send(message);
+        }
+
+        function onFail(context) {
+          console.log("Failed to connect");
+        }
+
+        // called when the client loses its connection
+        function onConnectionLost(responseObject) {
+          if (responseObject.errorCode !== 0) {
+            console.log("onConnectionLost:"+responseObject.errorMessage);
+          }
+        }
+
+        // called when a message arrives
+        function onMessageArrived(message) {
+          console.log("onMessageArrived:"+message.payloadString);
+        }
+
+      this.apiClient = new APIclient(carId, client);
       
       // this.tutorial.show();
       // this.game.input.onTap.add(this.logTap, this);
@@ -558,9 +627,10 @@ var MyGame = {};
     MyGame.game.state.add('Game', MyGame.Game);
 })(MyGame);
 
-var APIclient = function () {
-  this.id = null;
+var APIclient = function (id, client) {
+  this.id = id;
   this.driverName = null;
+  this.client = client;
   
   // set in index.html
   this.urlbase = URL_API_CAR_GAME;
@@ -572,7 +642,7 @@ var APIclient = function () {
 };
 
 APIclient.prototype.newCar = function(name){
-  this.id = this.generateID();
+  //this.id = this.generateID();
   this.driverName = name;
   // /car/new/<car ID>/<driver name>
   var url = this.urlbase + '/new/' + this.id + '/' + name;
@@ -602,21 +672,12 @@ APIclient.prototype.removeCar = function(){
 }
 
 APIclient.prototype.makeCall = function(url){
-  $.post(url, {}, function(response){
+    var message = new Paho.MQTT.Message(" ");
+    message.destinationName = url;
+    this.client.send(message);
+  //$.post(url, {}, function(response){
     // process response
-  })
-}
-
-APIclient.prototype.generateID = function(){
-  var d = new Date().getTime();
-  if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
-      d += performance.now(); //use high-precision timer if available
-  }
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = (d + Math.random() * 16) % 16 | 0;
-      d = Math.floor(d / 16);
-      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-  });
+  //})
 }
 
 // .	New car:

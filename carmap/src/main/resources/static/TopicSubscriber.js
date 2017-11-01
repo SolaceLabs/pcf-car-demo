@@ -28,8 +28,8 @@
 var flatTires = 0;
 var brokenLights = 0;
 var engineTroubles = 0;
-var okCars = 1;
-var totalConnectedCars = 1;
+var okCars = 0;
+var totalConnectedCars = 0;
 
 var TopicSubscriber = function (topicName) {
     "use strict";
@@ -69,7 +69,6 @@ var TopicSubscriber = function (topicName) {
 
     subscriber.log('\n*** Subscriber to topic "' + subscriber.topicName + '" is ready to connect ***');
    
-/*
     // Callback for message events
     subscriber.messageEventCb = function (session, message) {
         var topic = message.getDestination().getName();
@@ -77,13 +76,16 @@ var TopicSubscriber = function (topicName) {
         var t = message.getType();
         if (t == solace.MessageType.BINARY) {
             msgType = "BINARY";
-            subscriber.log('Received '+msgType+' message: topic="'+message.getDestination().getName()+'", payload="' + message.getBinaryAttachment() + '"');
+            subscriber.log('Received '+msgType+' message: topic="'+message.getDestination().getName()
+                            +'", payload="' + message.getBinaryAttachment() + '"');
         } else if (t == solace.MessageType.TEXT) {
             msgType = "TEXT";
-            subscriber.log('Received '+msgType+' message: topic="'+message.getDestination().getName()+'", text="' + message.getSdtContainer().getValue() + '"');
+            subscriber.log('Received '+msgType+' message: topic="'+message.getDestination().getName()
+                            +'", text="' + message.getSdtContainer().getValue() + '"');
         } else {
             msgType = "other";
-            subscriber.log('Received '+msgType+' message: topic="'+message.getDestination().getName()+'", payload="' + message.getBinaryAttachment() + '"');
+            subscriber.log('Received '+msgType+' message: topic="'+message.getDestination().getName()
+                            +'", payload="' + message.getBinaryAttachment() + '"');
         }
         if (message.getDestination().getName().indexOf('geo/coord') == 0 &&  message.getBinaryAttachment() != null) {
             // use indexOf == 0 instead of startsWith() b/c that's not supported on older IE
@@ -108,11 +110,38 @@ var TopicSubscriber = function (topicName) {
             //if (payload.fault != 'OK')
                 //alert(payload.fault);
             addMarker(payload,map);
+
+            flatTires = 0;
+            brokenLights = 0;
+            engineTroubles = 0;
+            okCars = 0;
+
+            for (var key in cars) {
+                var car = cars[key];
+                switch (car.fault) {
+                    case "OK":
+                        okCars++;
+                        break;
+                    case "Flat Front Tire":
+                        flatTires++;
+                        break;
+                    case "Flat Rear Tire":
+                        flatTires++;
+                        break;
+                    case "Light Burnt Out":
+                        brokenLights++;
+                        break;
+                    default: // Engine Trouble
+                        engineTroubles++;
+                }
+            }
+
+            totalConnectedCars = okCars + flatTires + brokenLights + engineTroubles;
+            updateChart();
+
             return;
         }
-       
     };
-*/
 
     var humanCarIcon = {url:"96px_Pivotal-Demo_car-marker_green-marker-blue-convertible-fine.png", anchor:{x:21,y:60}};
     var autoCarIcon = {url:"72px_Pivotal-Demo_car-marker_gray-marker-black-car-fine.png", anchor:{x:21,y:60}};
@@ -131,6 +160,7 @@ var TopicSubscriber = function (topicName) {
         var name = payload.name;
         var id = payload.id;
         var autoGen = payload.autoGen;
+
         if (!(id in cars)) {
             cars[id] = {};
             if (autoGen == 0)
@@ -167,6 +197,7 @@ var TopicSubscriber = function (topicName) {
                 cars[id]["info"].open(map,marker);
             });
             marker.setAnimation(google.maps.Animation.DROP);
+
         } else {
             marker = cars[id]["marker"];
             //marker.setAnimation(google.maps.Animation.BOUNCE);
@@ -180,7 +211,6 @@ var TopicSubscriber = function (topicName) {
         // make sure it's fully opaque, and update the timestamp
         marker.setOpacity(1.0);
         cars[id]["timestamp"] = Date.now();
-        cars[id].fault = payload.fault;
 
         // NEW: update teh marker based on fault status
         if (payload.fault == "OK") {
@@ -196,6 +226,8 @@ var TopicSubscriber = function (topicName) {
         else // Engine Trouble
             cars[id]["marker"].setIcon(engineFaultIcon);
 
+        cars[id].fault = payload.fault;
+
         // this builds an HTML string for the popup info window when you click on the marker
         var infoContent = '<p><b>Name:</b> '+name+'<br/>';
         infoContent += '<b>ID:</b> '+id+'<br/>';
@@ -210,6 +242,7 @@ var TopicSubscriber = function (topicName) {
         infoContent += '</p>';
         cars[id]["info"].setContent(infoContent);
         //setTimeout(function(){ marker.setAnimation(null); },100);
+
         return marker;
     }
     
@@ -223,7 +256,9 @@ var TopicSubscriber = function (topicName) {
             if (Date.now() - timestamp > 120000) {  // disappears after 120 seconds
                 cars[key]["marker"].setOpacity(0);
                 cars[key]["marker"].setMap(null);  // makes the label disappear
+
                 delete cars[key];
+
             } else if (Date.now() - timestamp > 60000) {
                 cars[key]["marker"].setOpacity(0.5);
                 cars[key]["info"].close();  // if it's open
@@ -234,7 +269,6 @@ var TopicSubscriber = function (topicName) {
     
     fadeMarkers();  // kick off the looping check for old markers
 
-/*
     // Callback for session events
     subscriber.sessionEventCb = function (session, event) {
         subscriber.log(event.toString());
@@ -264,10 +298,10 @@ var TopicSubscriber = function (topicName) {
             }
         }
     };
-*/
 
     // Establishes connection to Solace router
     subscriber.run = function () {
+/*
             var xhr = new XMLHttpRequest();
             subscriber.log('About to open connection...');
             xhr.open('GET', "cars", true);
@@ -327,8 +361,8 @@ var TopicSubscriber = function (topicName) {
                     updateChart();
                 }
             }
+*/
 
-/*
         if (subscriber.session !== null) {
             subscriber.log('Already connected and ready to subscribe.');
         } else {
@@ -336,21 +370,20 @@ var TopicSubscriber = function (topicName) {
             //var vpn = document.getElementById('vpn').value;
             //var user = document.getElementById('user').value;
             //var pw = document.getElementById('password').value;
-            var host = "10.244.0.3:7000";
-            var vpn = "v003";
-            var user = "v003.cu000017";
-            var pw = "16698a80-0381-422d-a69e-aa6fb30eb273";
+            var host = "tcp.apps.pcfdemo.solacemessaging.net:16322";
+            var vpn = "v002";
+            var user = "v002.cu000089";
+            var pw = "d281c8b3-717c-4bf6-90cb-45e05df0bbe3";
             if (host) {
                 subscriber.connectToSolace(host,vpn,user,pw);
                 subscriber.subscribe();
+                console.log('Subscribed');
             } else {
                 subscriber.log('Cannot connect: please specify the Solace router web transport URL.');
             }
         }
-*/
     };
 
-/*
     subscriber.connectToSolace = function (host,vpn,user,pw) {
         subscriber.log('Connecting to Solace router web transport URL ' + host + '.');
         var sessionProperties = new solace.SessionProperties();
@@ -441,7 +474,6 @@ var TopicSubscriber = function (topicName) {
             subscriber.log('Cannot unsubscribe because not connected to Solace router.');
         }
     };
-*/
 
     return subscriber;
 };

@@ -15,3 +15,5 @@ applications:
   path: cargen/build/libs/cargen.jar
   services:
   - solace-messaging-demo-instance
+  env:
+    ROBOCARS: 10
