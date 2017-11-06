@@ -41,8 +41,6 @@ var TopicSubscriber = function (topicName) {
     var cars = {};
     var curZIndex = 1;
 
-
-    //http://ecmanaut.blogspot.hk/2006/07/encoding-decoding-utf8-in-javascript.html
     function decode_utf8(s) {
         return decodeURIComponent(escape(s));
     }
@@ -58,13 +56,8 @@ var TopicSubscriber = function (topicName) {
         var now = new Date();
         var time = [('0' + now.getHours()).slice(-2), ('0' + now.getMinutes()).slice(-2), ('0' + now.getSeconds()).slice(-2)];
         var timestamp = '[' + time.join(':') + '] ';
-        //console.log(timestamp + line);
-        //var logTextArea = document.getElementById('log');
         logger.push(timestamp + line);
         if (logger.length > 100) logger.shift();  // trim it to 50
-        //logTextArea.value += timestamp + line + '\n';
-        //logTextArea.value = logger.join('\n');
-        //logTextArea.scrollTop = logTextArea.scrollHeight;
     };
 
     subscriber.log('\n*** Subscriber to topic "' + subscriber.topicName + '" is ready to connect ***');
@@ -107,8 +100,6 @@ var TopicSubscriber = function (topicName) {
             } else {
                 subscriber.log("Received invalid formatted message");
             }
-            //if (payload.fault != 'OK')
-                //alert(payload.fault);
             addMarker(payload,map);
 
             flatTires = 0;
@@ -241,14 +232,12 @@ var TopicSubscriber = function (topicName) {
         }
         infoContent += '</p>';
         cars[id]["info"].setContent(infoContent);
-        //setTimeout(function(){ marker.setAnimation(null); },100);
 
         return marker;
     }
     
      // this function will slowly fade out a car if it hasn't "ticked" in a certain amount of time 
     function fadeMarkers() {
-        //console.log("Current num cars: "+Object.keys(cars).length);
         for (var key in cars) {
             // skip loop if the property is from prototype
             if (!cars.hasOwnProperty(key)) continue;
@@ -301,79 +290,14 @@ var TopicSubscriber = function (topicName) {
 
     // Establishes connection to Solace router
     subscriber.run = function () {
-/*
-            var xhr = new XMLHttpRequest();
-            subscriber.log('About to open connection...');
-            xhr.open('GET', "cars", true);
-            subscriber.log('About to issue GET...');
-            xhr.send();
-            subscriber.log('Send called');
-            //xhr.addEventListener("readystatechange", processRequest, false);
-            //subscriber.log('Event listener added');
-
-            xhr.onreadystatechange = function() {
-                subscriber.log('onreadystatechange called with readyState=' + this.readyState
-                        + ', status=' + this.status );
-                if (this.readyState === 4 && this.status === 200) {
-                    var response = JSON.parse(this.responseText);
-                    //alert(this.responseText);
-
-                    var i = 0;
-                    for (i in response) {
-                        var car = response[i];
-                        addMarker(car,map);
-                    }
-                    if (i == 0)
-                        setTimeout(subscriber.run,2000);  // run again in 5 seconds -- this makes it into a loop
-                    else
-                    {
-                        //alert("car not null. cars returned: " + i);
-                        setTimeout(subscriber.run,100);  // run again immediately
-                    }
-
-                    flatTires = 0;
-                    brokenLights = 0;
-                    engineTroubles = 0;
-                    okCars = 0;
-
-                    var j = 0;
-                    for (j in cars) {
-                        var car = cars[j];
-                        switch (car.fault) {
-                            case "OK":
-                                okCars++;
-                                break;
-                            case "Flat Front Tire":
-                                flatTires++;
-                                break;
-                            case "Flat Rear Tire":
-                                flatTires++;
-                                break;
-                            case "Light Burnt Out":
-                                brokenLights++;
-                                break;
-                            default: // Engine Trouble
-                                engineTroubles++;
-                        }
-                    }
-
-                    totalConnectedCars = okCars + flatTires + brokenLights + engineTroubles;
-                    updateChart();
-                }
-            }
-*/
 
         if (subscriber.session !== null) {
             subscriber.log('Already connected and ready to subscribe.');
         } else {
-            //var host = document.getElementById('host').value;
-            //var vpn = document.getElementById('vpn').value;
-            //var user = document.getElementById('user').value;
-            //var pw = document.getElementById('password').value;
-            var host = "tcp.apps.pcfdemo.solacemessaging.net:16322";
-            var vpn = "v002";
-            var user = "v002.cu000089";
-            var pw = "d281c8b3-717c-4bf6-90cb-45e05df0bbe3";
+            var host = "tcp.apps.pcfdemo.solacemessaging.net:16983";
+            var vpn = "v005";
+            var user = "v005.cu000045";
+            var pw = "26f6a46c-5616-4bb5-bf3c-a8305ab047b4";
             if (host) {
                 subscriber.connectToSolace(host,vpn,user,pw);
                 subscriber.subscribe();
