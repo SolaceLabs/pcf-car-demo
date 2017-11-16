@@ -4,14 +4,16 @@ applications:
   memory: 512M
   path: carmap/build/libs/carmap.jar
   services:
-  - solace-messaging-demo-instance
+  - solace-messaging-instance
 - name: cardemo
   memory: 512M
   path: cardemo/build/libs/cardemo.jar
   services:
-  - solace-messaging-demo-instance
+  - solace-messaging-instance
 - name: cargen
   memory: 512M
   path: cargen/build/libs/cargen.jar
   services:
-  - solace-messaging-demo-instance
+  - solace-messaging-instance
+  env:
+    ROBOCARS: 10

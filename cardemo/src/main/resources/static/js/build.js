@@ -4,16 +4,6 @@ var MyGame = {};
 (function(MyGame, undefined) {
     'use strict';
 
-    // Create the object for webfont.js to use.
-    // window.WebFontConfig = {
-    //     active: function() {
-    //         MyGame.Init.prototype.fontLoaded = true;
-    //     },
-    //     google: {
-    //         families: ['Walter Turncoat']
-    //     }
-    // };
-
     // This state loads the assets for the loading bar and sets
     // some options, then loads the game state that preloads game assets.
     MyGame.Init = function(game) {};
@@ -25,56 +15,38 @@ var MyGame = {};
         update: update,
         enterIncorrectOrientation: enterIncorrectOrientation,
         leaveIncorrectOrientation: leaveIncorrectOrientation
+
     };
     
     function create() {
-      // this.game.add.plugin(Fabrique.Plugins.InputField);
-      // this.game.add.plugin(PhaserInput.Plugin);
     };
 
     function init() {
-        /* jshint validthis: true */
         // Set to single pointer input.
         this.input.maxPointers = 1;
         // Uncomment to disable automatic pause when game loses focus.
         //this.stage.disableVisibilityChange = true;
 
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-        // this.scale.setMinMax(400, 300, 800, 600); // Adjust to your game dimensions
         this.scale.pageAlignHorizontally = true;
         this.scale.pageAlignVertically = true;
 
         if (!this.game.device.desktop) {
             this.scale.forceOrientation(true, false); // Landscape
-            //this.scale.forceOrientation(false, true); // Portrait
             this.scale.enterIncorrectOrientation.add(this.enterIncorrectOrientation, this);
             this.scale.leaveIncorrectOrientation.add(this.leaveIncorrectOrientation, this);
         }
         this.scale.refresh();
-        
-        // this.screenshot = this.game.add.sprite(0, 0, 'spritesheet', 'screenshot');
-        // this.screenshot.scale.set(2);
     }
 
     function preload() {
-        /* jshint validthis: true */
-        // Load the webfont script for custom fonts
-        // this.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1/webfont.js');
-
         // Load images for use in Loader state.
         this.load.image('loadingBar', 'assets/images/loading-bar.png');
         this.load.image('loadingBarBg', 'assets/images/loading-bar-bg.png');
-
-        // Load object script for LoadingBar.
-//         this.load.script('loadingBarObj', 'js/objs/loadingBar.js');
     }
 
     function update() {
-        /* jshint validthis: true */
-        // Go straight to Loader state after font loads.
-        // if (this.fontLoaded) {
-            this.state.start('Loader');
-        // }
+        this.state.start('Loader');
     }
 
     function enterIncorrectOrientation() {
@@ -92,13 +64,6 @@ var MyGame = {};
         // Get back to the game!
 
         if(!this.game.device.desktop){
-          // if(firstRunLandscape){
-          //   gameRatio = window.innerWidth/window.innerHeight;		
-          //   game.width = Math.ceil(640*gameRatio);
-          //   game.height = 640;
-          //   game.renderer.resize(game.width,game.height);
-          //   game.state.start("Play");		
-          // }
           document.getElementById("orientation").style.display="none";
           this.game.paused = false;
         }
@@ -113,9 +78,9 @@ var MyGame = {};
     };
 
     MyGame.Game.prototype = {
+        generateID: generateID,
         create: create,
         update: update,
-        // render: render,
         logTap: logTap,
         setDrag: setDrag,
         tapStart: tapStart,
@@ -128,6 +93,18 @@ var MyGame = {};
         guiHandler: guiHandler,
         showNameGui: showNameGui
     };
+
+    function generateID() {
+      var d = new Date().getTime();
+      if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
+          d += performance.now(); //use high-precision timer if available
+      }
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+          var r = (d + Math.random() * 16) % 16 | 0;
+          d = Math.floor(d / 16);
+          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+    }
 
     function create() {
       this.isMoving = false;
@@ -161,24 +138,11 @@ var MyGame = {};
       this.audio.sounds['driving'].markers["driving"].start += offset;
       this.audio.sounds['driving'].markers["driving"].duration -= offset;
       this.audio.sounds['driving'].markers["driving"].durationMS -= offset*1000
-      // this.audio.sounds['driving'].markers["driving"].end -= offset;
-      
-      // this.audio.sounds['idle'].markers["idle"].loop = true;
-      // this.audio.sounds['idle'].markers["idle"].start += offset;
-      // this.audio.sounds['idle'].markers["idle"].duration -= offset;
-      // this.audio.sounds['idle'].markers["idle"].durationMS -= offset*1000;
-      // this.audio.sounds['idle'].markers["idle"].end -= offset;
             
       this.background = this.game.add.tileSprite(0, -200, this.game.width, 400, 'spritesheet', 'bg cropped');
       this.background.scale.set(2.4);
 
       this.car = new Car(this.game, this.game.world.centerX, this.game.world.centerY+50, null);
-      
-      // this.startButton = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY+200, 'spritesheet', 'play');
-      // this.startButton.anchor.set(0.5);
-      // this.visible = false;
-      // this.startButton.inputEnabled = true;
-      // this.startButton.events.onInputDown.add(this.tapStart, this);
       
       this.logo = this.game.add.sprite(this.game.world.width-15, this.game.world.height-20, 'spritesheet', 'solace-logo');
       this.logo.anchor.set(1);
@@ -188,7 +152,6 @@ var MyGame = {};
       this.startButton.anchor.set( 0.5);
       this.startButton.scale.set( 1.5);
       this.startButton.inputEnabled = true;
-      // this.startButton.events.onInputDown.add(this.fixit, this);
       this.startButton.visible = false;
       
       this.helpButton = this.game.add.sprite(this.game.world.width-100, 100, 'spritesheet', 'tutorial');
@@ -225,34 +188,70 @@ var MyGame = {};
       this.zoneInputEnable(false);
       this.helpButton.inputEnabled = false;
       
-      // this.helpHandler();
-      // this.gui = new Gui(this.game, 0, 0, this.guiHandler, this);
-      
       this.audio.play('idle');
       this.tapStart();
       this.game.time.events.add(1400, function() {
-        // this.gui.show();
         this.showNameGui();
         this.helpButton.inputEnabled = true;
       }, this);
       
-      this.apiClient = new APIclient();
-      
-      // this.tutorial.show();
-      // this.game.input.onTap.add(this.logTap, this);
-      // this.setDrag(this.tutorial.closeButton);
-      
-      // var name = prompt("Please enter your name", "");
-      // if (name != null) {
-      //   console.log('player name:' + name);
-      // }
+      var carId = generateID();
+
+        var hostname = "tcp.apps.pcfdemo.solacemessaging.net";
+        var port = 50977;
+        var clientId = carId;
+        var userName = "v005.cu000045";
+        var passWord = "26f6a46c-5616-4bb5-bf3c-a8305ab047b4";
+
+        // Create an MQTT client instance
+        var client = new Paho.MQTT.Client(hostname, port, clientId);
+
+        // set callback handlers
+        client.onConnectionLost = onConnectionLost;
+        client.onMessageArrived = onMessageArrived;
+
+       var options = {
+          invocationContext: {host : hostname, port: port, path: "", clientId: clientId},
+          cleanSession: true,
+          onSuccess: onConnect,
+          onFailure: onFail
+        };
+
+        options.userName = userName;
+        options.password = passWord;
+
+        // connect the MQTT client
+        client.connect(options);
+        console.log('Connecting...');
+
+        // called when the client connects
+        function onConnect(context) {
+          console.log("Connected");
+        }
+
+        function onFail(context) {
+          console.log("Failed to connect");
+        }
+
+        // called when the client loses its connection
+        function onConnectionLost(responseObject) {
+          if (responseObject.errorCode !== 0) {
+            console.log("onConnectionLost:"+responseObject.errorMessage);
+          }
+        }
+
+        // called when a message arrives
+        function onMessageArrived(message) {
+          console.log("onMessageArrived:"+message.payloadString);
+        }
+
+      this.apiClient = new APIclient(carId, client);
     }
     
     function showNameGui() {
       var that = this;
       swal({
           title: "Please enter your name", 
-          // text: "Enter your Name:",
           type: "input",
           showCancelButton: false,
           closeOnConfirm: false,
@@ -280,7 +279,6 @@ var MyGame = {};
     }
 
     function guiHandler(name) {
-      // console.log('guiHandler' + name);
       this.apiClient.newCar(name);
       this.helpHandler();
     }
@@ -292,7 +290,6 @@ var MyGame = {};
           isInputEnabled = false;
       }
       else{
-        // this.tutorial.hide();
         if (this.isFirstTutorial){
           this.isFirstTutorial = false;
           this.tapStart();
@@ -333,7 +330,6 @@ var MyGame = {};
     function setDrag(sprite) {
       sprite.inputEnabled = true;
       sprite.input.enableDrag();
-      // sprite.events.onDragStart.add(onDragStart, this);
       sprite.events.onDragStop.add(this.onDragStop, this);
     }
 
@@ -362,7 +358,6 @@ var MyGame = {};
         this.audio.play('idle-to-drive');
         this.audio.stop('idle');
         this.game.time.events.add(500, function() {
-            // this.audio.play('driving');
             if (this.loopByMarker){
                 this.drivingLoopSound.play('loop', 0, 1, true);
             }
@@ -391,17 +386,12 @@ var MyGame = {};
         if (sprite.faultKey=='ENGINE'){ this.audio.play('car-dying'); }
         if (sprite.faultKey=='LIGHT'){ this.audio.play('glass-shatter_1'); }
         
-        // this.isMoving = false;
         this.isAccelerating = false;
         this.isOnTransition = true;
         
         this.audio.play('drive-slow-to-idle');
-        // this.audio.stop('driving');
         this.drivingLoopSound.stop();
         this.audio.play('idle');
-        // this.game.time.events.add(500, function() {
-        //   this.audio.play('idle');
-        // }, this);
       }
     }
 
@@ -442,20 +432,14 @@ var MyGame = {};
       }
 
       if (this.isMoving){
-          // this.background.tilePosition.x = this.background.tilePosition.x - 4;
-          // this.car.fwheel.rotation += 0.1;
-
           this.background.tilePosition.x = this.background.tilePosition.x - this.bgVelocity;
           this.car.fwheel.fcap.rotation += this.rotateVel;
           this.car.rwheel.rcap.rotation += this.rotateVel; 
       }
-
-      // this.background.tilePosition.x = this.background.tilePosition.x - this.bgVelocity;
     }
 
     function render(){
       this.game.debug.text(this.game.time.fps || '--', 300, 300, "#00ff00", '36px Courier');
-      // console.log(this.game.time.fps);
       var pos = this.game.input.activePointer.position;
       this.game.debug.text("x:" + pos.x.toFixed(2) + " y:" + pos.y.toFixed(2), 120, 180, "#000000", '30px Courier');
     }
@@ -482,11 +466,6 @@ var MyGame = {};
     };
 
     function preload() {
-        /* jshint validthis: true */
-        // var fontStyle = {
-        //     font: '18px Walter Turncoat',
-        //     fill: '#7edcfc'
-        // };
         var fontStyle = {
             font: '24px sans-serif',
             fill: '#7edcfc'
@@ -507,33 +486,19 @@ var MyGame = {};
         this.loadingBar.background.tint = 0x88D7F7;
         this.loadingBar.bar.tint = 0xdcfc7e;
 
-        // Load assets and game object scripts here.
-        // this.load.image( 'bg', 'assets/images/bg.png');
-        
         this.load.audio('driving_loop', ['assets/audio/driving_loop4.ogg', 'assets/audio/driving_loop4.m4a', ] );
         this.load.audiosprite('audiosprite', ['assets/audio/audioSprite.ogg', 'assets/audio/audioSprite.m4a'], 'assets/audio/audioSprite.json');
         this.load.atlasJSONHash( 'spritesheet', 'assets/images/spritesheet.png', 'assets/images/spritesheet.json');
-        
-        // for (var i = 1; i <= 9; i++) {
-        //     this.load.image( 'car' + i, "assets/images/3 car moving main anim/3 car moving anim000" + i + ".png");
-        // }
-        // this.load.image( 'car10', "assets/images/3 car moving main anim/3 car moving anim0010.png");
-        // for (var i = 1; i <= 9; i++) {
-        //     this.load.image( 'car1' + i, "assets/images/3 car moving main anim/3 car moving anim001" + i + ".png");
-        // }
     }
 
     function create() {
-        /* jshint validthis: true */
         this.loadingBar.bar.cropEnabled = false;
     }
 
     function update() {
         // Make sure audio is decoded before moving on to the next state.
         if (this.cache.isSoundDecoded('audiosprite') && this.ready === false) {
-          //  this.audio.config.spritemap['driving'].loop = true;
            this.ready = true;
-          //  this.state.start('MainMenu');
         }
         if (this.ready === true) {
             this.state.start('Game');
@@ -545,7 +510,6 @@ var MyGame = {};
     'use strict';
 
     // Create the Phaser game instance.
-    // MyGame.game = new Phaser.Game(1920, 1080, Phaser.AUTO);
     MyGame.game = new Phaser.Game(1280, 720, Phaser.AUTO);
 
     // Set anything that needs to be accesible across states here.
@@ -558,9 +522,10 @@ var MyGame = {};
     MyGame.game.state.add('Game', MyGame.Game);
 })(MyGame);
 
-var APIclient = function () {
-  this.id = null;
+var APIclient = function (id, client) {
+  this.id = id;
   this.driverName = null;
+  this.client = client;
   
   // set in index.html
   this.urlbase = URL_API_CAR_GAME;
@@ -572,28 +537,30 @@ var APIclient = function () {
 };
 
 APIclient.prototype.newCar = function(name){
-  this.id = this.generateID();
   this.driverName = name;
+
   // /car/new/<car ID>/<driver name>
   var url = this.urlbase + '/new/' + this.id + '/' + name;
   this.makeCall(url);
 }
 
 APIclient.prototype.newFault = function(key){
-  // this.id = this.generateID();
   this.driverName = name;
+
   // /car/fault/<car ID>/<fault type>
   var url = this.urlbase + '/fault/' + this.id + '/' + key;
   this.makeCall(url);
 }
 
 APIclient.prototype.clearFault = function(){
+
   // /car/clear/<car ID>
   var url = this.urlbase + '/clear/' + this.id;
   this.makeCall(url);
 }
 
 APIclient.prototype.removeCar = function(){
+
   // /car/remove/<car ID>
   if (this.id!=null){
     var url = this.urlbase + '/remove/' + this.id;
@@ -602,53 +569,38 @@ APIclient.prototype.removeCar = function(){
 }
 
 APIclient.prototype.makeCall = function(url){
-  $.post(url, {}, function(response){
-    // process response
-  })
+    var message = new Paho.MQTT.Message(" ");
+    message.destinationName = url;
+    this.client.send(message);
 }
 
-APIclient.prototype.generateID = function(){
-  var d = new Date().getTime();
-  if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
-      d += performance.now(); //use high-precision timer if available
-  }
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = (d + Math.random() * 16) % 16 | 0;
-      d = Math.floor(d / 16);
-      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-  });
-}
+/*
 
-// .	New car:
-// /car/new/<car ID>/<driver name>
-// 
-// where <car ID> is the phone user provided name of the car
-// 
-// 2.	Create fault in car:
-// /car/fault/<car ID>/<fault type>
-// 
-// where <fault type> can be one of FRONT_TIRE, REAR_TIRE, LIGHT, ENGINE
-// 
-// 3.	Clear fault (all faults will be cleared):
-// /car/clear/<car ID>
-// 
-// 4.	Remove car from demo:
-// /car/remove/<car ID>
+   1.   New car:
+   /car/new/<car ID>/<driver name>
+   
+   where <car ID> is the phone user provided name of the car
+   
+   2.	Create fault in car:
+   /car/fault/<car ID>/<fault type>
+   
+   where <fault type> can be one of FRONT_TIRE, REAR_TIRE, LIGHT, ENGINE
+   
+   3.	Clear fault (all faults will be cleared):
+   /car/clear/<car ID>
+   
+   4.	Remove car from demo:
+   /car/remove/<car ID>
+
+*/
 
 var Car = function(game, x, y, frame) {
-  //this.atlasKeys = gmutils.getAtlasFrameNames('Car');
-  //Phaser.Sprite.call(this, app.game, x, y, this.atlasKeys.atlasName, this.atlasKeys.frameName);
-  //this.app = app;
-  //this.p = app.p;
-  //this.game = app.game;
   Phaser.Sprite.call(this, game, x, y, 'spritesheet', 'null');
 
   this.anchor.set(0.5, 0.5);
-  //this.game.physics.arcade.enable(this);
   this.scale.set(1.6);
   this.game.add.existing(this);
 
-  // this.reset(this.game.world.centerX, this.game.world.centerY+50);
   this.lastFaultKey = '';
   
   // initialize your prefab here
@@ -731,19 +683,11 @@ var Car = function(game, x, y, frame) {
 Car.prototype = Object.create(Phaser.Sprite.prototype);
 Car.prototype.constructor = Car;
 
-// Car.prototype.update = function() {
-//   // console.log('Car ')
-//   // write your prefab's specific update code here
-// 
-// };
-
 Car.prototype.startMove = function() {
   this.hands.play('drive');
   this.man.play('drive');
   this.game.add.tween(this.carContainer).to({y: this.carContainer.y+2}, 600, Phaser.Easing.Linear.None, true, 0, -1, true);
   this.game.add.tween(this.shadow.scale).to({x: 1.02}, 600, Phaser.Easing.Linear.None, true, 0, -1, true);
-  // this.game.add.tween(this.fwheel).to({rotation: Math.PI*2}, 1000, Phaser.Easing.Linear.None, true, 0, -1);
-  // this.game.add.tween(this.rwheel).to({rotation: Math.PI*2}, 1000, Phaser.Easing.Linear.None, true, 0, -1);
 
   this.carOk.visible = true;
   this.lights.visible = false;
@@ -815,124 +759,17 @@ Car.prototype.stopMove = function() {
 }
 
 var Foo = function(game, x, y, frame) {
-  //this.atlasKeys = gmutils.getAtlasFrameNames('foo');
-  //Phaser.Sprite.call(this, app.game, x, y, this.atlasKeys.atlasName, this.atlasKeys.frameName);
-  //this.app = app;
-  //this.p = app.p;
-  //this.game = app.game;
   Phaser.Sprite.call(this, game, x, y, frame);
 
   this.anchor.set(0.5, 0.5);
-  //this.game.physics.arcade.enable(this);
   this.game.add.existing(this);
-
-  // initialize your prefab here
-
 };
 
 Foo.prototype = Object.create(Phaser.Sprite.prototype);
 Foo.prototype.constructor = Foo;
 
 Foo.prototype.update = function() {
-  // console.log('foo ')
-  // write your prefab's specific update code here
-
 };
-
-// var Gui = function(game, x, y, hideCallback, hideCallbackcontext) {
-//   Phaser.Sprite.call(this, game, x, y, 'spritesheet', 'null');
-//   this.anchor.set(0.5, 0.5);
-//   this.game.add.existing(this);
-// 
-//   this.hideCallback = hideCallback;
-//   this.hideCallbackcontext = hideCallbackcontext;
-//   
-//   // initialize your prefab here
-//   this.bg = this.game.add.graphics(0, 0);
-//   this.bg.beginFill(0x000000, 0.5);
-//   this.bg.drawRect(0, 0, this.game.width, this.game.height);
-//   this.bg.alpha = 0;
-//   this.bg.endFill();
-//   this.bg.inputEnabled = true;
-//   this.bg.events.onInputDown.add(this.hide, this);
-//   
-//   this.panel = this.game.add.graphics(0, 0);
-//   this.panel.beginFill(0xFFFFFF, 0.9);
-//   var xmargin = 300;
-//   var ymargin = 180;
-//   this.panel.drawRoundedRect(xmargin, ymargin, this.game.width-xmargin*2, this.game.height-ymargin*2, 10);
-//   this.panel.alpha = 0;
-//   this.panel.endFill();
-//   this.panel.inputEnabled = true;
-//   this.panel.events.onInputDown.add(this.hide, this);
-// 
-//   this.title = this.game.add.text(this.game.world.centerX+10, 270, 'Enter you Name',
-//       { font: "56px sans-serif", fill: "#333333 ", align: "center" });
-//   this.title.anchor.set(0.5,0.5);
-//   this.panel.addChild(this.title);
-//   
-//   this.input_field =  this.game.add.inputField(this.game.world.centerX, this.game.world.centerY-10, {
-//       font: '36px Arial',
-//       fill: '#212121',
-//       fontWeight: 'bold',
-//       width: 400,
-//       padding: 12,
-//       borderWidth: 2,
-//       borderColor: '#1F6FB6',
-//       borderRadius: 6,
-//       placeHolder: 'Enter your Name...',
-//       // type: Fabrique.InputType.password
-//   });
-//   // this.input_field.anchor.set(0.5);
-//   this.input_field.x = this.input_field.x - this.input_field.width*0.5; 
-//   this.panel.addChild(this.input_field);
-//   
-//   this.startButton = this.game.add.button(this.game.world.centerX, this.game.world.centerY+115, 'spritesheet', this.hide, this, 'fix-it-button-up','fix-it-button-up', 'fix-it-button-down');
-//   this.startButton.anchor.set( 0.5);
-//   this.startButton.scale.set( 1);
-//   this.startButton.inputEnabled = true;
-//   this.panel.addChild(this.startButton);
-//     
-//   this.bg.visible = false;
-//   this.panel.visible = false;
-//   this.isHidden = true;
-// };
-// 
-// Gui.prototype = Object.create(Phaser.Sprite.prototype);
-// Gui.prototype.constructor = Gui;
-// 
-// 
-// Gui.prototype.show = function() {
-//   this.bg.visible = true;
-//   this.panel.visible = true;
-//   this.game.add.tween(this.bg).to({alpha: 0.85}, 800, Phaser.Easing.Linear.None, true);
-//   this.game.add.tween(this.panel).to({alpha: 0.95}, 500,  Phaser.Easing.Cubic.In, true);
-//   
-//   this.isHidden = false;
-// };
-// 
-// Gui.prototype.hide = function() {
-//   
-//   if (this.input_field.text.text==''){
-//     return;
-//   }
-//   
-//   if (this.isHidden){
-//     return;
-//   }
-//   
-//   this.game.add.tween(this.bg).to({alpha: 0}, 900, Phaser.Easing.Linear.None, true);
-//   this.game.add.tween(this.panel).to({alpha: 0}, 600,  Phaser.Easing.Cubic.In, true);
-//   
-//   
-//   this.hideCallback.call(this.hideCallbackcontext, this.input_field.text.text);
-//   this.isHidden = true;
-//   
-//   this.game.time.events.add(800, function() {
-//     this.bg.visible = false;
-//     this.panel.visible = false;
-//   }, this);
-// };
 
 (function(MyGame, undefined) {
     'use strict';
@@ -947,9 +784,7 @@ Foo.prototype.update = function() {
 
         // Left to right loading bar
         this.bar = game.add.sprite(game.world.centerX - 175, game.world.centerY - 16, 'loadingBar');
-        // Center to outsides loading bar.
-        //this.bar = game.add.sprite(game.world.centerX, game.world.centerY, 'loadingBar');
-        //this.bar.anchor.setTo(0.5, 0.5);
+
         this.add(this.bar);
     };
 
@@ -1046,8 +881,6 @@ Tutorial.prototype.constructor = Tutorial;
 Tutorial.prototype.createTarget = function(point) {
   var target = this.game.add.sprite(point.x, point.y, 'spritesheet', 'hand');
   target.anchor.set(0.5);
-  // target.scale.set(0.7);
-  // target.alpha = 0;
   var pulseframes = Phaser.Animation.generateFrameNames('target cycle/target test', 1, 13, '', 4);
   target.animations.add('pulse', pulseframes, 10, true);
   
